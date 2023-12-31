@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\UserRepository;
@@ -9,10 +11,24 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
- * @ApiResource()
+ * @ApiResource(
+ *    collectionOperations={
+ * "get"={"normalization_context"={"groups"={"user_read"}}
+ *  },
+ * "post"
+ * },
+ * itemOperations={
+ *  "get"={"normalization_context"= {"groups"={"user_details_read"}}
+ *  },
+ *  "put",
+ *  "patch",
+ *  "delete"
+ * }
+ * )
  */
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -21,6 +37,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
+     * @Groups({"user_read","user_details_read","article_details_read"})
      */
     private string $email;
 
@@ -37,12 +54,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\OneToMany(targetEntity=Article::class, mappedBy="author")
+     * @Groups({"user_details_read"})
      */
     private Collection $articles;
 
     public function __construct()
     {
         $this->articles = new ArrayCollection();
+
         $this->createdAt = new \DateTimeImmutable();
     }
 
@@ -152,9 +171,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if ($this->articles->removeElement($article)) {
             // set the owning side to null (unless already changed)
-            if ($article->getAuthor() === $this) {
-                $article->setAuthor(null);
-            }
+            // if ($article->getAuthor() === $this) {
+            //     $article->setAuthor(null);
+            // }
         }
 
         return $this;

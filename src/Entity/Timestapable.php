@@ -21,35 +21,20 @@ trait Timestapable
     private ?\DateTimeInterface $updatedAt;
 
     /**
-     * @param \DateTimeInterface $createdAt
-     * @return Timestapable
-     */
-    public function setCreatedAt(\DateTimeInterface $createdAt): Timestapable
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    /**
      * @return \DateTimeInterface
      */
     public function getCreatedAt(): \DateTimeInterface
     {
-
         return $this->createdAt;
     }
 
-    public function setUpdatedtAt(?\DateTimeInterface $updatedAt): Timestapable
+    public function setUpdatedtAt(?\DateTimeInterface $updatedAt): void
     {
         $this->updatedAt = $updatedAt;
-
-        return $this;
     }
 
     public function getUpdatedtAt(): ?\DateTimeInterface
     {
-
         return $this->updatedAt;
     }
 }
