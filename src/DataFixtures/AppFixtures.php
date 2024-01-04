@@ -24,28 +24,32 @@ class AppFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
-      
-        
+
+
         $faker = Factory::create();
 
-        for ($u=0; $u < 10; $u++) { 
+        for ($u = 0; $u < 10; $u++) {
             # create User
             $user = new User();
-            $passHash = $this->encoder->hashPassword($user ,'password');
+            $passHash = $this->encoder->hashPassword($user, 'password');
 
             $user->setPassword($passHash)
                 ->setEmail($faker->email);
 
+            if ($u % 3 === 0) {
+                $user->setAge(25)
+                    ->setStatus(false);
+            }
+
             $manager->persist($user);
 
-            for ($a=0; $a < random_int(5,20) ; $a++) { 
+            for ($a = 0; $a < random_int(5, 20); $a++) {
                 # code...
                 $article = (new Article())->setAuthor($user)
-                            ->setName($faker->text(50))
-                            ->setContent($faker->text(300));
-                $manager->persist($article);                     
-            }    
-            
+                    ->setName($faker->text(50))
+                    ->setContent($faker->text(300));
+                $manager->persist($article);
+            }
         }
 
         $manager->flush();
